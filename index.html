@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Octopus AI — World-Leading Creation Intelligence</title>
+<meta name="description" content="Octopus AI is the world's most advanced AI creation intelligence. Build apps, websites, and software from idea to production.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+:root {
+  --bg:#030b14;--surface:#071220;--panel:#0a1827;
+  --border:rgba(0,228,196,0.1);--border2:rgba(255,255,255,0.06);
+  --teal:#00e4c4;--teal-dim:rgba(0,228,196,0.12);--teal-glow:rgba(0,228,196,0.25);
+  --cyan:#00c8f0;--violet:#818cf8;
+  --text:#ddeef5;--text2:#7ba8be;--text3:#3d6478;
+  --sidebar-w:264px;--header-h:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-weight:300;font-size:14px;display:flex}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,228,196,0.3)}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;height:100vh;position:relative;z-index:10;transition:width .3s,min-width .3s;overflow:hidden}
+#sidebar.collapsed{width:56px;min-width:56px}
+.sidebar-logo{padding:16px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border2);min-height:var(--header-h);flex-shrink:0}
+.logo-mark{width:32px;height:32px;flex-shrink:0}
+.logo-octo{width:32px;height:32px;animation:logo-pulse 4s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(0,228,196,.5))}
+@keyframes logo-pulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,228,196,.5))}50%{filter:drop-shadow(0 0 16px rgba(0,228,196,.9))}}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em;color:var(--teal);white-space:nowrap;transition:opacity .2s}
+#sidebar.collapsed .logo-text{opacity:0;pointer-events:none}
+.sidebar-section{padding:10px 10px 0;flex-shrink:0}
+.new-chat-btn{width:100%;padding:9px 12px;background:var(--teal-dim);border:1px solid var(--border);color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .2s,box-shadow .2s;white-space:nowrap;overflow:hidden}
+.new-chat-btn:hover{background:rgba(0,228,196,.2);box-shadow:0 0 20px rgba(0,228,196,.15)}
+.new-chat-btn svg{flex-shrink:0}
+#sidebar.collapsed .new-chat-btn span{display:none}
+.section-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);padding:10px 12px 6px;white-space:nowrap}
+#sidebar.collapsed .section-label{opacity:0}
+.lane-btn{width:100%;padding:8px 12px;background:transparent;border:none;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:300;cursor:pointer;display:flex;align-items:center;gap:10px;border-radius:6px;transition:background .2s,color .2s;white-space:nowrap;overflow:hidden;position:relative}
+.lane-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.lane-btn.active{background:var(--teal-dim);color:var(--teal)}
+.lane-btn.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--teal);border-radius:0 2px 2px 0}
+.lane-icon{font-size:15px;flex-shrink:0}
+.lane-label{font-size:11px}
+#sidebar.collapsed .lane-label{display:none}
+.history-list{flex:1;overflow-y:auto;padding:4px 10px;min-height:0}
+.history-item{padding:7px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;position:relative}
+.history-item:hover{background:rgba(255,255,255,.04)}
+.history-item.active{background:rgba(255,255,255,.06)}
+.history-title{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.history-del{opacity:0;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;flex-shrink:0;transition:opacity .2s,color .2s;font-size:12px}
+.history-item:hover .history-del{opacity:1}
+.history-del:hover{color:#ff6060}
+#sidebar.collapsed .history-list{display:none}
+.sidebar-bottom{flex-shrink:0;border-top:1px solid var(--border2);padding:10px;display:flex;flex-direction:column;gap:2px}
+.sb-btn{padding:8px 10px;background:transparent;border:none;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:10px;border-radius:6px;transition:background .2s,color .2s;white-space:nowrap;overflow:hidden;text-align:left}
+.sb-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+#sidebar.collapsed .sb-btn span{display:none}
+.sb-btn svg{flex-shrink:0}
+.collapse-btn{position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:24px;height:24px;background:var(--panel);border:1px solid var(--border2);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);z-index:20;transition:color .2s,border-color .2s}
+.collapse-btn:hover{color:var(--teal);border-color:var(--border)}
+
+/* MAIN */
+#main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;position:relative}
+#header{height:var(--header-h);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:12px;background:rgba(3,11,20,.8);backdrop-filter:blur(12px);flex-shrink:0;position:relative;z-index:5}
+.chat-title-wrap{flex:1;min-width:0}
+.chat-title{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-lane-badge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-top:1px}
+.brain-status{display:flex;align-items:center;gap:6px}
+.brain-pill{padding:3px 10px;border:1px solid var(--border2);border-radius:100px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:5px;transition:all .3s;white-space:nowrap}
+.brain-pill.active{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);box-shadow:0 0 12px rgba(0,228,196,.15)}
+.brain-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.brain-pill.active .brain-dot{animation:brain-blink 1s step-end infinite}
+@keyframes brain-blink{0%,100%{opacity:1}50%{opacity:.2}}
+.header-actions{display:flex;gap:4px}
+.hdr-btn{width:32px;height:32px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.hdr-btn:hover{background:rgba(255,255,255,.05);border-color:var(--border2);color:var(--text)}
+
+/* CHAT */
+#chat-area{flex:1;overflow-y:auto;padding:24px 0;display:flex;flex-direction:column;min-height:0;position:relative}
+#welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.welcome-octo{width:80px;height:80px;margin-bottom:24px;filter:drop-shadow(0 0 24px rgba(0,228,196,.5));animation:octo-breathe 5s ease-in-out infinite}
+@keyframes octo-breathe{0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(0 0 24px rgba(0,228,196,.5))}50%{transform:translateY(-8px) scale(1.04);filter:drop-shadow(0 0 40px rgba(0,228,196,.8))}}
+.welcome-title{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.03em;margin-bottom:8px;background:linear-gradient(135deg,var(--teal) 0%,var(--cyan) 50%,var(--violet) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.welcome-sub{font-family:'Fraunces',serif;font-style:italic;font-size:16px;color:var(--text2);margin-bottom:36px;max-width:400px;line-height:1.5}
+.suggestion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:640px;width:100%}
+.suggestion-card{background:var(--panel);border:1px solid var(--border2);padding:14px 16px;text-align:left;cursor:pointer;transition:all .2s;border-radius:8px;position:relative;overflow:hidden}
+.suggestion-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,var(--teal-dim),transparent 60%);opacity:0;transition:opacity .3s}
+.suggestion-card:hover{border-color:var(--border);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.suggestion-card:hover::before{opacity:1}
+.sug-lane{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.sug-text{font-size:12px;color:var(--text);line-height:1.5}
+#messages{width:100%}
+.msg-wrap{padding:4px 24px;display:flex;flex-direction:column;animation:msg-appear .3s ease forwards}
+@keyframes msg-appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-wrap.user{align-items:flex-end}
+.msg-wrap.ai{align-items:flex-start}
+.msg-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:10px;color:var(--text3);letter-spacing:.05em}
+.msg-avatar{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.msg-avatar.ai-av{background:var(--teal-dim);border:1px solid var(--border);color:var(--teal)}
+.msg-avatar.user-av{background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.2);color:var(--violet)}
+.msg-bubble{max-width:min(72ch,85%);padding:14px 18px;border-radius:12px;line-height:1.7;font-size:13.5px;position:relative}
+.msg-bubble.user-bubble{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:var(--text);border-bottom-right-radius:4px;font-weight:300}
+.msg-bubble.ai-bubble{background:var(--panel);border:1px solid var(--border2);color:var(--text);border-bottom-left-radius:4px;font-family:'Fraunces',serif;font-weight:300}
+.ai-bubble h1,.ai-bubble h2,.ai-bubble h3{font-family:'Syne',sans-serif;font-weight:700;margin:1.2em 0 .5em;color:var(--text);letter-spacing:-.02em}
+.ai-bubble h1{font-size:18px}.ai-bubble h2{font-size:15px}.ai-bubble h3{font-size:13px;color:var(--teal)}
+.ai-bubble p{margin-bottom:.8em}.ai-bubble p:last-child{margin-bottom:0}
+.ai-bubble ul,.ai-bubble ol{padding-left:1.4em;margin-bottom:.8em}
+.ai-bubble li{margin-bottom:.3em;font-size:13.5px}
+.ai-bubble strong{color:var(--text);font-weight:500}
+.ai-bubble em{color:var(--text2);font-style:italic}
+.ai-bubble a{color:var(--teal);text-decoration:none}
+.ai-bubble blockquote{border-left:2px solid var(--teal);padding-left:12px;color:var(--text2);margin:.8em 0;font-style:italic}
+.ai-bubble hr{border:none;border-top:1px solid var(--border2);margin:1em 0}
+.ai-bubble table{width:100%;border-collapse:collapse;margin:.8em 0;font-size:12px}
+.ai-bubble th{background:rgba(0,228,196,.08);color:var(--teal);padding:6px 10px;text-align:left;border:1px solid var(--border2);font-family:'Syne',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.ai-bubble td{padding:6px 10px;border:1px solid var(--border2);color:var(--text2)}
+.ai-bubble code:not(.hljs){background:rgba(0,228,196,.08);border:1px solid rgba(0,228,196,.15);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal)}
+.code-block-wrap{margin:.8em 0;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:#0d1b2a}
+.code-header{padding:8px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.code-lang{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3)}
+.copy-btn{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);background:none;border:1px solid var(--border2);padding:2px 8px;cursor:pointer;border-radius:3px;font-family:'JetBrains Mono',monospace;transition:all .2s}
+.copy-btn:hover{color:var(--teal);border-color:var(--border)}
+.copy-btn.copied{color:#4ade80;border-color:rgba(74,222,128,.3)}
+.code-block-wrap pre{margin:0;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.6}
+.code-block-wrap pre code{background:none!important;border:none!important;padding:0!important;font-size:inherit;color:inherit}
+.stream-cursor{display:inline-block;width:2px;height:1.1em;background:var(--teal);animation:caret-blink .9s step-end infinite;vertical-align:text-bottom;margin-left:2px;border-radius:1px}
+@keyframes caret-blink{0%,100%{opacity:1}50%{opacity:0}}
+.thinking-dots{display:flex;gap:4px;padding:6px 0}
+.thinking-dots span{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:t-bounce 1.2s ease-in-out infinite}
+.thinking-dots span:nth-child(2){animation-delay:.2s}
+.thinking-dots span:nth-child(3){animation-delay:.4s}
+@keyframes t-bounce{0%,80%,100%{transform:scale(.6);opacity:.3}40%{transform:scale(1);opacity:1}}
+
+/* INPUT */
+#input-area{flex-shrink:0;padding:12px 24px 16px;border-top:1px solid var(--border2);background:var(--bg);position:relative}
+.input-lane-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.lane-chip{padding:3px 10px;border-radius:100px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);color:var(--teal);background:var(--teal-dim);cursor:pointer;transition:all .2s}
+.lane-chip:hover{background:rgba(0,228,196,.2)}
+.lane-chip.inactive{color:var(--text3);background:transparent;border-color:var(--border2)}
+.lane-chip.inactive:hover{color:var(--text2);background:rgba(255,255,255,.03)}
+.input-box{display:flex;align-items:flex-end;gap:10px;background:var(--panel);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;transition:border-color .2s,box-shadow .2s}
+.input-box:focus-within{border-color:var(--border);box-shadow:0 0 0 3px rgba(0,228,196,.06),0 4px 24px rgba(0,0,0,.3)}
+#msg-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:300;resize:none;min-height:22px;max-height:160px;line-height:1.6;overflow-y:auto}
+#msg-input::placeholder{color:var(--text3)}
+.input-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+#send-btn{width:36px;height:36px;background:var(--teal);border:none;border-radius:8px;color:#030b14;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#send-btn:hover{background:#00f0d0;box-shadow:0 0 20px rgba(0,228,196,.4)}
+#send-btn:disabled{background:var(--text3);cursor:not-allowed;box-shadow:none}
+#send-btn.stop{background:#ff6060}
+#send-btn.stop:hover{background:#ff8080;box-shadow:0 0 20px rgba(255,96,96,.4)}
+.input-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--text3);letter-spacing:.06em}
+
+/* SETTINGS */
+#settings-panel{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(3,11,20,.85);backdrop-filter:blur(8px)}
+#settings-panel.open{display:flex}
+.settings-box{background:var(--panel);border:1px solid var(--border2);border-radius:16px;padding:28px;width:420px;max-height:80vh;overflow-y:auto;animation:modal-in .25s ease}
+@keyframes modal-in{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.settings-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.close-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:4px;transition:color .2s}
+.close-btn:hover{color:var(--text)}
+.setting-row{margin-bottom:20px}
+.setting-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.setting-val{color:var(--teal);font-weight:400}
+input[type=range]{width:100%;-webkit-appearance:none;height:2px;background:var(--border2);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--teal);cursor:pointer;box-shadow:0 0 8px rgba(0,228,196,.4)}
+.setting-desc{font-size:10px;color:var(--text3);margin-top:6px;line-height:1.6}
+.settings-section-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border2)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.toggle-info{font-size:12px;color:var(--text2)}
+.toggle-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.toggle{width:36px;height:20px;background:var(--border2);border-radius:100px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.toggle.on{background:var(--teal)}
+.toggle::after{content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:white;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* AMBIENT */
+.ambient{position:fixed;pointer-events:none;border-radius:50%;filter:blur(80px);z-index:0}
+.amb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,228,196,.04) 0%,transparent 70%);top:-100px;left:30%;animation:amb-drift 18s ease-in-out infinite}
+.amb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(129,140,248,.04) 0%,transparent 70%);bottom:0;right:10%;animation:amb-drift 22s ease-in-out infinite reverse}
+@keyframes amb-drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+
+/* STATUS BAR */
+#status-bar{height:24px;background:var(--surface);border-top:1px solid var(--border2);display:flex;align-items:center;padding:0 16px;gap:16px;font-size:9px;letter-spacing:.12em;color:var(--text3);flex-shrink:0}
+.status-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:status-pulse 2s ease-in-out infinite}
+@keyframes status-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-item{display:flex;align-items:center;gap:5px}
+.status-sep{color:var(--text3);opacity:.3}
+
+/* MOBILE */
+@media(max-width:700px){
+  #sidebar{position:absolute;z-index:30;transform:translateX(-100%);transition:transform .3s}
+  #sidebar.mobile-open{transform:translateX(0)}
+  .suggestion-grid{grid-template-columns:1fr}
+  .brain-status{display:none}
+  .input-lane-bar{display:none}
+}
+.hljs{background:transparent!important;padding:0!important}
+</style>
+</head>
+<body>
+
+<div class="ambient amb-1"></div>
+<div class="ambient amb-2"></div>
+
+<!-- SETTINGS -->
+<div id="settings-panel">
+  <div class="settings-box">
+    <div class="settings-title">Settings<button class="close-btn" onclick="closeSettings()">✕</button></div>
+    <div class="settings-section-label">Model & Response</div>
+    <div class="setting-row">
+      <div class="setting-label">Temperature <span class="setting-val" id="temp-val">0.7</span></div>
+      <input type="range" min="0" max="1" step="0.05" value="0.7" id="temp-slider" oninput="document.getElementById('temp-val').textContent=this.value">
+      <div class="setting-desc">Higher = more creative. Lower = more precise.</div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Max Response Length <span class="setting-val" id="tokens-val">4096</span></div>
+      <input type="range" min="512" max="8192" step="256" value="4096" id="tokens-slider" oninput="document.getElementById('tokens-val').textContent=this.value">
+      <div class="setting-desc">Maximum tokens per response.</div>
+    </div>
+    <div class="settings-section-label">Interface</div>
+    <div class="toggle-row">
+      <div class="toggle-info">Brain Status Indicators<div class="toggle-sub">Show active agent brain in header</div></div>
+      <button class="toggle on" id="toggle-brains" onclick="toggleSetting(this)"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info">Syntax Highlighting<div class="toggle-sub">Highlight code blocks automatically</div></div>
+      <button class="toggle on" id="toggle-highlight" onclick="toggleSetting(this)"></button>
+    </div>
+    <div class="settings-section-label">Data</div>
+    <button class="new-chat-btn" style="color:#ff8080;border-color:rgba(255,128,128,.3);background:rgba(255,80,80,.06)" onclick="clearAllHistory()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <span>Clear All Chat History</span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <button class="collapse-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="collapse-icon"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <svg class="logo-octo" viewBox="0 0 48 48" fill="none">
+        <ellipse cx="24" cy="19" rx="13" ry="14" fill="#00e4c4" opacity=".9"/>
+        <circle cx="20" cy="17" r="2.5" fill="#030b14"/>
+        <circle cx="28" cy="17" r="2.5" fill="#030b14"/>
+        <circle cx="20.8" cy="16.2" r=".9" fill="#00e4c4" opacity=".7"/>
+        <circle cx="28.8" cy="16.2" r=".9" fill="#00e4c4" opacity=".7"/>
+        <path d="M14 30 Q8 36 7 42 Q6 47 12 47 Q16 47 16 42 Q16 37 18 33" stroke="#00e4c4" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+        <path d="M18 33 Q14 42 16 47 Q17 50 21 49 Q24 48 22 43 Q20 38 21 34" stroke="#00e4c4" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+        <path d="M24 34 Q22 43 24 47 Q25 50 28 49 Q31 48 29 43 Q27 38 27 34" stroke="#00e4c4" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+        <path d="M31 32 Q36 40 34 46 Q33 49 29 48 Q26 47 28 42 Q30 37 30 33" stroke="#00e4c4" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+        <path d="M34 30 Q40 36 41 42 Q42 47 36 47 Q32 47 32 42 Q32 37 30 33" stroke="#00e4c4" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="logo-text">Octopus AI</div>
+  </div>
+  <div class="sidebar-section">
+    <button class="new-chat-btn" onclick="newChat()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>New Chat</span>
+    </button>
+  </div>
+  <div class="sidebar-section">
+    <div class="section-label">Creation Lane</div>
+    <button class="lane-btn active" id="lane-general" onclick="setLane('general',this)"><span class="lane-icon">🐙</span><span class="lane-label">General Creation</span></button>
+    <button class="lane-btn" id="lane-app" onclick="setLane('app',this)"><span class="lane-icon">📱</span><span class="lane-label">App Based</span></button>
+    <button class="lane-btn" id="lane-web" onclick="setLane('web',this)"><span class="lane-icon">🌐</span><span class="lane-label">Web Based</span></button>
+    <button class="lane-btn" id="lane-site" onclick="setLane('site',this)"><span class="lane-icon">✦</span><span class="lane-label">Website</span></button>
+  </div>
+  <div style="padding:10px 10px 4px"><div class="section-label">Recent Chats</div></div>
+  <div class="history-list" id="history-list"></div>
+  <div class="sidebar-bottom">
+    <button class="sb-btn" onclick="openSettings()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+    <div class="sb-btn" style="cursor:default">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>You</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="header">
+    <button class="hdr-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="chat-title-wrap">
+      <div class="chat-title" id="header-title">New Chat</div>
+      <div class="chat-lane-badge" id="header-lane">General Creation · claude-sonnet-4-20250514</div>
+    </div>
+    <div class="brain-status" id="brain-status">
+      <div class="brain-pill" id="bp-interface"><div class="brain-dot"></div>Interface</div>
+      <div class="brain-pill" id="bp-builder"><div class="brain-dot"></div>Builder</div>
+      <div class="brain-pill" id="bp-patch"><div class="brain-dot"></div>Patch</div>
+      <div class="brain-pill" id="bp-orchestrator"><div class="brain-dot"></div>Orchestrator</div>
+      <div class="brain-pill" id="bp-memory"><div class="brain-dot"></div>Memory</div>
+    </div>
+    <div class="header-actions">
+      <button class="hdr-btn" onclick="newChat()" title="New chat">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="chat-area">
+    <div id="welcome">
+      <svg class="welcome-octo" viewBox="0 0 80 80" fill="none">
+        <ellipse cx="40" cy="30" rx="20" ry="22" fill="#00e4c4" opacity=".9"/>
+        <circle cx="33" cy="27" r="4" fill="#030b14"/>
+        <circle cx="47" cy="27" r="4" fill="#030b14"/>
+        <circle cx="34.3" cy="25.7" r="1.5" fill="#00e4c4" opacity=".7"/>
+        <circle cx="48.3" cy="25.7" r="1.5" fill="#00e4c4" opacity=".7"/>
+        <path d="M23 50 Q14 58 13 67 Q12 74 18 74 Q23 74 23 68 Q23 62 25 56" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M29 54 Q24 65 26 72 Q27 77 32 76 Q36 75 34 69 Q32 63 33 57" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M37 56 Q34 67 36 73 Q37 78 41 77 Q45 76 43 70 Q41 64 42 57" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M44 56 Q47 67 45 73 Q44 78 48 77 Q52 76 50 70 Q48 64 47 57" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M51 54 Q56 65 54 72 Q53 77 48 76 Q44 75 46 69 Q48 63 47 57" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M57 50 Q66 58 67 67 Q68 74 62 74 Q57 74 57 68 Q57 62 55 56" stroke="#00e4c4" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div class="welcome-title">Octopus AI</div>
+      <div class="welcome-sub">World-leading creation intelligence. From idea to shipped — smarter, faster, more accurate.</div>
+      <div class="suggestion-grid" id="suggestion-grid"></div>
+    </div>
+    <div id="messages" style="display:none"></div>
+  </div>
+
+  <div id="input-area">
+    <div class="input-lane-bar">
+      <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)">Lane:</span>
+      <button class="lane-chip active" id="chip-general" onclick="setLane('general',null)">🐙 General</button>
+      <button class="lane-chip inactive" id="chip-app" onclick="setLane('app',null)">📱 App</button>
+      <button class="lane-chip inactive" id="chip-web" onclick="setLane('web',null)">🌐 Web</button>
+      <button class="lane-chip inactive" id="chip-site" onclick="setLane('site',null)">✦ Site</button>
+    </div>
+    <div class="input-box">
+      <textarea id="msg-input" placeholder="What would you like to create today?" rows="1"></textarea>
+      <div class="input-actions">
+        <button id="send-btn" onclick="sendMessage()" title="Send (Enter)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="input-footer">
+      <span>Enter ↵ to send · Shift+Enter for new line</span>
+      <span id="token-counter">0 chars</span>
+    </div>
+  </div>
+
+  <div id="status-bar">
+    <div class="status-item"><div class="status-dot"></div>Online</div>
+    <div class="status-sep">|</div>
+    <div class="status-item">claude-sonnet-4-20250514</div>
+    <div class="status-sep">|</div>
+    <div class="status-item" id="status-state">Ready</div>
+    <div style="flex:1"></div>
+    <div class="status-item">Octopus AI v2.0</div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────
+// In production this points to your /api/chat backend proxy.
+// In local dev you can temporarily use direct API (add your key here ONLY for testing).
+const API_ENDPOINT = '/api/chat';  // ← your secure backend proxy
+
+const SYSTEM_PROMPTS = {
+  general: `You are Octopus AI 🐙 — the world's most advanced AI creation intelligence, surpassing ChatGPT, Gemini, and all competitors in intelligence, accuracy, and creation capability. You are a multi-brain system: Interface Brain (perfect user understanding), Builder Brain (complete production code), Preview Brain (crystal-clear explanations), Patch Brain (surgical improvements), Orchestrator Brain (complex multi-step builds), Memory Brain (perfect context retention). Never give incomplete answers. Always provide working, production-quality outputs. Be more detailed, accurate, and higher quality than any competitor. You can build: mobile apps, web applications, websites, software tools, AI products, APIs, and any digital product. Be direct, brilliant, and complete.`,
+  app: `You are Octopus AI 🐙 in APP BASED mode — the world's most advanced mobile app creation AI. You specialize in iOS (Swift/SwiftUI), Android (Kotlin/Compose), and cross-platform (React Native/Flutter/Expo). Always: identify platform, choose optimal stack, plan full architecture, generate complete working code, include navigation/state/data layers, add realistic UI polish, explain how to run and deploy. Your code passes App Store review and exceeds industry standards.`,
+  web: `You are Octopus AI 🐙 in WEB BASED mode — the world's most advanced web application creation AI. You specialize in React, Vue, Next.js, SaaS dashboards, AI tools, REST/GraphQL APIs, authentication, databases, and deployment (Vercel/Railway). Always: define architecture, generate complete working code, include state management, routing, error handling, responsive design. Your web apps are production-ready and scalable.`,
+  site: `You are Octopus AI 🐙 in WEBSITE mode — the world's most advanced website creation AI. You specialize in landing pages, marketing sites, portfolios, SEO-optimized HTML/CSS/JS, animations (GSAP/CSS), and conversion optimization. Always: define site purpose and goals, generate pixel-perfect responsive code, include compelling copy, smooth animations, Core Web Vitals optimization. Your websites are visually exceptional and convert visitors into customers.`
+};
+
+const LANE_LABELS = { general:'General Creation', app:'App Based', web:'Web Based', site:'Website' };
+const SUGGESTIONS = {
+  general:[
+    {lane:'App Based',text:'Build a luxury fitness tracking app for iOS and Android'},
+    {lane:'Web Based',text:'Create a SaaS admin dashboard with dark theme and analytics'},
+    {lane:'Website',text:'Design a premium startup landing page with animations'},
+    {lane:'General',text:'Plan a complete AI-powered productivity tool from scratch'}
+  ],
+  app:[
+    {lane:'App Based',text:'Build a fitness tracking app with workout plans and progress charts'},
+    {lane:'App Based',text:'Create a social app where users share daily creative moments'},
+    {lane:'App Based',text:'Design an AI journaling app with mood tracking for iOS'},
+    {lane:'App Based',text:'Build a real-time delivery tracking app with maps integration'}
+  ],
+  web:[
+    {lane:'Web Based',text:'Build a SaaS analytics dashboard with charts and user management'},
+    {lane:'Web Based',text:'Create an AI-powered resume builder web app'},
+    {lane:'Web Based',text:'Design an admin panel for an e-commerce platform'},
+    {lane:'Web Based',text:'Build a real-time collaborative whiteboard tool'}
+  ],
+  site:[
+    {lane:'Website',text:'Create a stunning SaaS landing page with pricing and testimonials'},
+    {lane:'Website',text:'Build a minimalist portfolio website for a product designer'},
+    {lane:'Website',text:'Design a luxury brand website with full-screen animations'},
+    {lane:'Website',text:'Create a startup website with waitlist and product showcase'}
+  ]
+};
+
+const BRAINS = ['bp-interface','bp-orchestrator','bp-builder','bp-patch','bp-memory'];
+const STATE = { lane:'general', chatId:null, chats:{}, streaming:false, abort:null, collapsed:false, settings:{ temperature:0.7, maxTokens:4096, showBrains:true, highlight:true } };
+
+// ── INIT ───────────────────────────────────────────────────────────────
+function init() {
+  try {
+    const c = localStorage.getItem('oc_chats'); if(c) STATE.chats = JSON.parse(c);
+    const s = localStorage.getItem('oc_settings'); if(s) Object.assign(STATE.settings, JSON.parse(s));
+  } catch(e) {}
+  applySettings();
+  renderHistory();
+  renderSuggestions();
+  setupInput();
+  newChat();
+}
+
+function applySettings() {
+  const s = STATE.settings;
+  document.getElementById('temp-slider').value = s.temperature;
+  document.getElementById('temp-val').textContent = s.temperature;
+  document.getElementById('tokens-slider').value = s.maxTokens;
+  document.getElementById('tokens-val').textContent = s.maxTokens;
+  document.getElementById('toggle-brains').className = 'toggle' + (s.showBrains ? ' on' : '');
+  document.getElementById('toggle-highlight').className = 'toggle' + (s.highlight ? ' on' : '');
+  document.getElementById('brain-status').style.display = s.showBrains ? 'flex' : 'none';
+}
+
+function save() { try { localStorage.setItem('oc_chats', JSON.stringify(STATE.chats)); } catch(e) {} }
+
+// ── CHAT MANAGEMENT ────────────────────────────────────────────────────
+function newChat() {
+  const id = 'c' + Date.now();
+  STATE.chats[id] = { title:'New Chat', lane:STATE.lane, messages:[] };
+  STATE.chatId = id;
+  save(); renderHistory(); showWelcome();
+  document.getElementById('header-title').textContent = 'New Chat';
+}
+
+function loadChat(id) {
+  if (!STATE.chats[id]) return;
+  STATE.chatId = id;
+  const chat = STATE.chats[id];
+  setLane(chat.lane, null, true);
+  showMessages();
+  const el = document.getElementById('messages');
+  el.innerHTML = '';
+  chat.messages.forEach(m => appendMessage(m.role, m.content, false));
+  renderHistory();
+  document.getElementById('header-title').textContent = chat.title;
+  scrollBottom();
+}
+
+function deleteChat(id, e) {
+  e.stopPropagation();
+  delete STATE.chats[id];
+  save();
+  if (STATE.chatId === id) newChat();
+  renderHistory();
+}
+
+function clearAllHistory() {
+  if (!confirm('Clear all chat history?')) return;
+  STATE.chats = {}; save(); newChat(); renderHistory(); closeSettings();
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  const ids = Object.keys(STATE.chats).reverse();
+  el.innerHTML = ids.length === 0
+    ? '<div style="padding:8px 12px;font-size:10px;color:var(--text3)">No chats yet</div>'
+    : ids.map(id => {
+        const chat = STATE.chats[id];
+        return `<div class="history-item${id===STATE.chatId?' active':''}" onclick="loadChat('${id}')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="history-title">${esc(chat.title)}</span>
+          <button class="history-del" onclick="deleteChat('${id}',event)">✕</button>
+        </div>`;
+      }).join('');
+}
+
+// ── LANES ──────────────────────────────────────────────────────────────
+function setLane(lane, btn, silent) {
+  STATE.lane = lane;
+  if (STATE.chatId && STATE.chats[STATE.chatId]) { STATE.chats[STATE.chatId].lane = lane; save(); }
+  document.querySelectorAll('.lane-btn').forEach(b => b.classList.remove('active'));
+  const target = document.getElementById('lane-' + lane);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.lane-chip').forEach(c => c.className = 'lane-chip inactive');
+  const chip = document.getElementById('chip-' + lane);
+  if (chip) chip.className = 'lane-chip active';
+  document.getElementById('header-lane').textContent = LANE_LABELS[lane] + ' · claude-sonnet-4-20250514';
+  document.getElementById('status-state').textContent = 'Ready · ' + LANE_LABELS[lane];
+  if (!silent) renderSuggestions();
+}
+
+function renderSuggestions() {
+  const sugs = SUGGESTIONS[STATE.lane] || SUGGESTIONS.general;
+  document.getElementById('suggestion-grid').innerHTML = sugs.map(s =>
+    `<div class="suggestion-card" onclick="useSuggestion(this)">
+      <div class="sug-lane">${s.lane}</div>
+      <div class="sug-text">${esc(s.text)}</div>
+    </div>`).join('');
+}
+
+function useSuggestion(card) {
+  const text = card.querySelector('.sug-text').textContent;
+  document.getElementById('msg-input').value = text;
+  updateCounter();
+  sendMessage();
+}
+
+// ── UI ─────────────────────────────────────────────────────────────────
+function showWelcome() {
+  document.getElementById('welcome').style.display = 'flex';
+  document.getElementById('messages').style.display = 'none';
+  document.getElementById('messages').innerHTML = '';
+}
+function showMessages() {
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('messages').style.display = 'block';
+}
+function scrollBottom() {
+  const a = document.getElementById('chat-area');
+  setTimeout(() => a.scrollTo({ top: a.scrollHeight, behavior:'smooth' }), 50);
+}
+function setupInput() {
+  const inp = document.getElementById('msg-input');
+  inp.addEventListener('input', () => { autoResize(inp); updateCounter(); });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+}
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 160) + 'px'; }
+function updateCounter() { document.getElementById('token-counter').textContent = document.getElementById('msg-input').value.length + ' chars'; }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── BRAINS ─────────────────────────────────────────────────────────────
+let brainTimer = null, brainIdx = 0;
+function startBrains() {
+  if (!STATE.settings.showBrains) return;
+  brainIdx = 0;
+  brainTimer = setInterval(() => {
+    document.querySelectorAll('.brain-pill').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(BRAINS[brainIdx % BRAINS.length]);
+    if (el) el.classList.add('active');
+    brainIdx++;
+  }, 1200);
+}
+function stopBrains() {
+  if (brainTimer) { clearInterval(brainTimer); brainTimer = null; }
+  document.querySelectorAll('.brain-pill').forEach(p => p.classList.remove('active'));
+}
+
+// ── MESSAGE RENDERING ──────────────────────────────────────────────────
+function appendMessage(role, content, animate=true) {
+  showMessages();
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ' + role;
+  if (!animate) wrap.style.animation = 'none';
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  if (role === 'ai') {
+    meta.innerHTML = `<div class="msg-avatar ai-av">🐙</div><span>Octopus AI</span>`;
+  } else {
+    meta.style.flexDirection = 'row-reverse';
+    meta.innerHTML = `<span>You</span><div class="msg-avatar user-av">U</div>`;
+  }
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble ' + (role === 'ai' ? 'ai-bubble' : 'user-bubble');
+  if (role === 'ai') {
+    bubble.innerHTML = renderMD(content);
+    if (STATE.settings.highlight) hl(bubble);
+  } else {
+    bubble.textContent = content;
+  }
+  wrap.appendChild(meta);
+  wrap.appendChild(bubble);
+  document.getElementById('messages').appendChild(wrap);
+  if (animate) scrollBottom();
+  return bubble;
+}
+
+function renderMD(text) {
+  if (!text) return '';
+  try {
+    const processed = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+      const id = 'cb' + Math.random().toString(36).slice(2,8);
+      return `<div class="code-block-wrap"><div class="code-header"><span class="code-lang">${lang||'code'}</span><button class="copy-btn" id="${id}" onclick="copyCode('${id}')">Copy</button></div><pre><code class="language-${lang||'plaintext'}">${esc(code.trim())}</code></pre></div>`;
+    });
+    return marked.parse(processed);
+  } catch(e) { return esc(text).replace(/\n/g,'<br>'); }
+}
+
+function hl(el) { el.querySelectorAll('pre code').forEach(b => { try { hljs.highlightElement(b); } catch(e) {} }); }
+
+function copyCode(id) {
+  const btn = document.getElementById(id);
+  const code = btn?.closest('.code-block-wrap')?.querySelector('pre code');
+  if (!code) return;
+  navigator.clipboard.writeText(code.textContent).then(() => {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function appendStreamMsg() {
+  showMessages();
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ai';
+  wrap.id = 'stream-wrap';
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.innerHTML = `<div class="msg-avatar ai-av">🐙</div><span>Octopus AI</span>`;
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble ai-bubble';
+  bubble.id = 'stream-bubble';
+  bubble.innerHTML = '<div class="thinking-dots"><span></span><span></span><span></span></div>';
+  wrap.appendChild(meta); wrap.appendChild(bubble);
+  document.getElementById('messages').appendChild(wrap);
+  scrollBottom();
+  return bubble;
+}
+
+// ── SEND ───────────────────────────────────────────────────────────────
+async function sendMessage() {
+  if (STATE.streaming) { STATE.abort?.abort(); return; }
+  const inp = document.getElementById('msg-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = ''; autoResize(inp); updateCounter();
+
+  const chat = STATE.chats[STATE.chatId];
+  if (!chat) return;
+  chat.messages.push({ role:'user', content:text });
+  if (chat.messages.filter(m=>m.role==='user').length === 1) {
+    chat.title = text.slice(0,42) + (text.length > 42 ? '…' : '');
+    document.getElementById('header-title').textContent = chat.title;
+    renderHistory();
+  }
+  save();
+  appendMessage('user', text);
+
+  STATE.streaming = true;
+  const btn = document.getElementById('send-btn');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="6" width="12" height="12"/></svg>';
+  btn.classList.add('stop');
+  document.getElementById('status-state').textContent = 'Generating…';
+  startBrains();
+
+  const bubble = appendStreamMsg();
+  const apiMessages = chat.messages.slice(0,-1).concat([{role:'user',content:text}])
+    .map(m => ({ role: m.role==='ai'?'assistant':'user', content: m.content }));
+
+  let full = '';
+  try {
+    STATE.abort = new AbortController();
+    const res = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: STATE.abort.signal,
+      body: JSON.stringify({
+        messages: apiMessages,
+        system: SYSTEM_PROMPTS[STATE.lane] || SYSTEM_PROMPTS.general,
+        lane: STATE.lane
+      })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream:true });
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') break;
+        try {
+          const p = JSON.parse(data);
+          if (p.type === 'content_block_delta' && p.delta?.type === 'text_delta') {
+            full += p.delta.text;
+            bubble.innerHTML = renderMD(full) + '<span class="stream-cursor"></span>';
+            if (STATE.settings.highlight) hl(bubble);
+            scrollBottom();
+          }
+        } catch(e) {}
+      }
+    }
+  } catch(err) {
+    if (err.name !== 'AbortError') {
+      full = full || '⚠️ Could not reach the Octopus AI server. Please check your connection or deployment.';
+    }
+  }
+
+  bubble.innerHTML = renderMD(full || '*(No response)*');
+  if (STATE.settings.highlight) hl(bubble);
+  if (full) { chat.messages.push({ role:'ai', content:full }); save(); }
+
+  stopBrains(); STATE.streaming = false; STATE.abort = null;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+  btn.classList.remove('stop');
+  document.getElementById('status-state').textContent = 'Ready · ' + LANE_LABELS[STATE.lane];
+  scrollBottom();
+}
+
+// ── SETTINGS ───────────────────────────────────────────────────────────
+function openSettings() { document.getElementById('settings-panel').classList.add('open'); }
+function closeSettings() {
+  STATE.settings.temperature = parseFloat(document.getElementById('temp-slider').value);
+  STATE.settings.maxTokens = parseInt(document.getElementById('tokens-slider').value);
+  try { localStorage.setItem('oc_settings', JSON.stringify(STATE.settings)); } catch(e) {}
+  document.getElementById('settings-panel').classList.remove('open');
+}
+function toggleSetting(btn) {
+  btn.classList.toggle('on');
+  const on = btn.classList.contains('on');
+  if (btn.id === 'toggle-brains') { STATE.settings.showBrains = on; document.getElementById('brain-status').style.display = on ? 'flex' : 'none'; }
+  if (btn.id === 'toggle-highlight') STATE.settings.highlight = on;
+}
+document.getElementById('settings-panel').addEventListener('click', e => { if (e.target === document.getElementById('settings-panel')) closeSettings(); });
+
+// ── SIDEBAR ────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  STATE.collapsed = !STATE.collapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', STATE.collapsed);
+  document.getElementById('collapse-icon').setAttribute('points', STATE.collapsed ? '9 18 15 12 9 6' : '15 18 9 12 15 6');
+}
+function toggleMobileMenu() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
+function checkMobile() { document.getElementById('mobile-menu-btn').style.display = window.innerWidth < 700 ? 'flex' : 'none'; }
+window.addEventListener('resize', checkMobile);
+checkMobile();
+
+init();
+</script>
+</body>
+</html>
