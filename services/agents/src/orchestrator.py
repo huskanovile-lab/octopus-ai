@@ -34,6 +34,7 @@ class AutonomousOrchestrator:
             "strategy": "momentum",
             "side": "long",
             "entry": tick["price"],
+            "confidence": _default_confidence(),
         }
         await self.bus.publish("signal_proposed", signal)
 
@@ -43,5 +44,16 @@ class AutonomousOrchestrator:
         else:
             await self.bus.publish(
                 "signal_rejected",
-                {**signal, "reasons": ["spread_too_wide", "session_noise"]},
+                {**signal, "reasonCodes": ["spread_too_wide", "session_noise"]},
             )
+
+
+def _default_confidence() -> dict[str, float]:
+    return {
+        "regimeConfidence": 0.8,
+        "strategyFitConfidence": 0.76,
+        "signalConfidence": 0.74,
+        "riskApprovalConfidence": 0.72,
+        "executionConfidence": 0.7,
+        "knowledgeConfidence": 0.68,
+    }
