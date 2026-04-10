@@ -16,15 +16,17 @@ def main() -> None:
     app = build_app(start_loop=False)
     client = TestClient(app)
 
-    for _ in range(8):
+    for _ in range(10):
         client.post("/api/v1/demo/run-step")
 
     print("status", client.get("/api/v1/system/status").json())
+    print("metrics", client.get("/api/v1/system/metrics").json())
     print("signals", len(client.get("/api/v1/signals").json()))
     print("rejected", len(client.get("/api/v1/signals/rejected").json()))
     print("fills", len(client.get("/api/v1/fills").json()))
     print("portfolio", client.get("/api/v1/portfolio/state").json())
-    print("replay_events", len(client.get("/api/v1/replay/example").json()))
+    replay = client.get("/api/v1/replay/example").json()
+    print("replay_invariants", replay["invariants"])
     print("Demo complete. Start API with uvicorn and open dashboard to watch live updates.")
 
 

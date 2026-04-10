@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -9,6 +10,8 @@ from .event_bus import InMemoryEventBus
 from .routers.api import router as api_router
 from .runtime import AutonomousRuntime
 from .ws.manager import SUPPORTED_CHANNELS, WSManager
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
 def build_app(start_loop: bool = True) -> FastAPI:
@@ -31,6 +34,7 @@ def build_app(start_loop: bool = True) -> FastAPI:
         "pnl_updated": "portfolio_updates",
         "anomaly_detected": "anomalies",
         "knowledge_conclusion_created": "knowledge_updates",
+        "heartbeat": "agent_activity",
     }
     for evt, channel in mapping.items():
         bus.subscribe(evt, lambda payload, ch=channel: fanout(ch, payload))

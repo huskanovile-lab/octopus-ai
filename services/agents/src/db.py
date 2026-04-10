@@ -79,7 +79,10 @@ class Database:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     ts TEXT,
                     conclusion TEXT,
-                    confidence REAL
+                    evidence TEXT,
+                    confidence REAL,
+                    stale_after_ts TEXT,
+                    status TEXT
                 );
                 CREATE TABLE IF NOT EXISTS anomalies (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -96,4 +99,3 @@ class Database:
                 "INSERT INTO system_events(ts,event_name,payload) VALUES(?,?,?)",
                 (ts, event_name, json.dumps(payload)),
             )
-

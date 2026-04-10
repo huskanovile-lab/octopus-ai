@@ -1,15 +1,34 @@
 from __future__ import annotations
 
 import json
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/v1")
+
+
+class ModeUpdate(BaseModel):
+    mode: str
 
 
 @router.get("/system/status")
 async def system_status(request: Request):
     s = request.app.state.runtime.state
-    return {"ai_active": s.active, "regime": s.regime, "symbol": s.symbol}
+    return {"ai_active": s.active, "regime": s.regime, "symbol": s.symbol, "mode": s.mode, "signal_funnel": s.signal_funnel}
+
+
+@router.get("/system/metrics")
+async def system_metrics(request: Request):
+    return request.app.state.runtime.obs.snapshot()
+
+
+@router.post("/system/mode")
+async def set_mode(body: ModeUpdate, request: Request):
+    try:
+        request.app.state.runtime.set_mode(body.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"mode": request.app.state.runtime.state.mode}
 
 
 @router.post("/demo/run-step")
@@ -67,7 +86,12 @@ async def portfolio_state(request: Request):
 async def knowledge(request: Request):
     with request.app.state.db.connect() as conn:
         rows = conn.execute("SELECT * FROM knowledge_conclusions ORDER BY id DESC LIMIT 10").fetchall()
-    return [dict(r) for r in rows]
+    out = []
+    for r in rows:
+        item = dict(r)
+        item["evidence"] = json.loads(item["evidence"] or "{}")
+        out.append(item)
+    return out
 
 
 @router.get("/anomalies")

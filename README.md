@@ -1,55 +1,59 @@
-# Octopus AI — Autonomous Paper Trading Vertical Slice
+# Octopus AI — Autonomous Runtime (Hardened Vertical Slice)
 
-This repo now contains a **working end-to-end autonomous paper trading loop** for one symbol (`AAPL`) with deterministic market feed steps.
-
-## What is implemented
-- Autonomous loop starts automatically on API startup (`uvicorn services.agents.src.main:app --reload`).
-- Deterministic feed drives: features -> regime -> signal -> tradeability -> risk -> execution -> portfolio updates.
-- Weak signals are rejected with explicit reason codes and persisted.
-- Approved signals pass through realistic paper order lifecycle (accepted, partially_filled/filled).
-- Major events are persisted to database (`services/agents/demo.db`) and streamed over WebSockets.
-- Dashboard shows live state: activity, regime, symbol, signal funnel, rejected signals, fills/positions, pnl, knowledge, anomalies.
-- Deterministic replay endpoint: `/api/v1/replay/example`.
-
-## Quick start
+## Local setup (clean clone)
+Backend (one command, includes seed/demo mode):
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r services/agents/requirements.txt pytest
-uvicorn services.agents.src.main:app --reload --port 8000
+bash scripts/start_backend.sh
+```
+Frontend (one command):
+```bash
+bash scripts/start_frontend.sh
 ```
 
-In another terminal:
-```bash
-cd apps/web
-npm install
-npm run dev
-```
-Open `http://localhost:3000`.
+## Concise architecture
+- `services/agents/src/runtime.py`: always-on autonomous loop with autonomy modes.
+- `services/agents/src/feed_adapter.py`: market data adapter boundary (`DeterministicDemoFeed` for verification).
+- `services/agents/src/db.py`: persisted events/signals/orders/fills/positions/knowledge/anomalies.
+- `services/agents/src/observability.py`: heartbeat, stage timing, event/rejection/execution/anomaly metrics.
+- `services/agents/src/replay.py`: decision-chain reconstruction + replay invariants.
+- `apps/web/components/control-room.tsx`: live state + grouped timeline + mode controls.
 
-## Deterministic demo seed/run
-```bash
-python scripts/run_demo_session.py
-```
+## Runtime walkthrough
+Each loop step performs:
+1. Observe: ingest deterministic tick and emit `market_tick_received`.
+2. Understand: compute features + regime + tradeability.
+3. Decide: propose signal and either reject (stored reasons) or approve.
+4. Act: simulate order lifecycle and update positions/portfolio.
+5. Review/Adapt: emit PnL, knowledge conclusion (with evidence/confidence/staleness), anomalies.
+6. Observe itself: structured logs + stage timings + heartbeat/event counters.
 
 ## How to verify the autonomous system is alive
-1. Start API and Web app as above.
-2. Confirm backend auto-loop is active:
-   - `curl http://localhost:8000/api/v1/system/status` should return `"ai_active": true`.
-3. Observe event growth:
-   - `curl http://localhost:8000/api/v1/system/events | jq 'length'` should keep increasing.
-4. Confirm signal funnel behavior:
-   - `curl http://localhost:8000/api/v1/signals`
-   - `curl http://localhost:8000/api/v1/signals/rejected`
-5. Confirm paper execution + portfolio updates:
-   - `curl http://localhost:8000/api/v1/fills`
-   - `curl http://localhost:8000/api/v1/positions`
-   - `curl http://localhost:8000/api/v1/portfolio/state`
-6. Confirm replayable trade cycle:
-   - `curl http://localhost:8000/api/v1/replay/example`
-7. Open dashboard and verify live updates for:
-   - AI active status, current regime, watched symbol, signal funnel, rejected signals,
-     approved/executed trades, open positions, portfolio pnl, latest knowledge, latest anomalies.
+- Check runtime status and mode:
+  - `curl http://localhost:8000/api/v1/system/status`
+- Check observability metrics:
+  - `curl http://localhost:8000/api/v1/system/metrics`
+- Check decision funnel:
+  - `curl http://localhost:8000/api/v1/signals`
+  - `curl http://localhost:8000/api/v1/signals/rejected`
+- Check execution/portfolio:
+  - `curl http://localhost:8000/api/v1/fills`
+  - `curl http://localhost:8000/api/v1/positions`
+  - `curl http://localhost:8000/api/v1/portfolio/state`
+- Check deterministic replay chain + invariants:
+  - `curl http://localhost:8000/api/v1/replay/example`
+
+## Replay invariants
+A valid reconstructed decision chain must include:
+- ordered prefix: `market_tick_received -> regime_updated -> feature_snapshot_created -> tradeability_score_updated -> signal_proposed`
+- terminal decision:
+  - either `signal_rejected`,
+  - or `signal_approved` followed by `order_created`, `order_filled`, `pnl_updated`.
+
+## Known limitations
+- Single symbol and deterministic feed only (real feed adapter interface exists but adapter not yet implemented).
+- Simplified position model (long-only accumulation for demo).
+- SQLite local persistence for verification; production Postgres path remains separate.
+- Frontend optimized for inspection over polish.
 
 ## Tests
 ```bash
