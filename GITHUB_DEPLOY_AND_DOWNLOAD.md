@@ -65,3 +65,9 @@ If you are in Windows CMD/PowerShell and get:
 use:
 - `scripts\start_backend_windows.bat`
 - `scripts\start_frontend_windows.bat`
+
+
+### Python build error on Windows (`pydantic-core`)
+If pip tries to compile `pydantic-core` and fails with Rust/Cargo errors, you are likely on an unsupported Python build for available wheels.
+Use Python **3.12** and run:
+- `scripts\start_backend_windows.bat`

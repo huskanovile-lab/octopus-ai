@@ -22,6 +22,13 @@ scripts\start_frontend_windows.bat
 ```
 If you see `'bash' is not recognized`, use these `.bat` scripts instead of `.sh`.
 
+
+## Windows troubleshooting
+If you see:
+- `'bash' is not recognized` -> use `.bat` scripts.
+- `Failed building wheel for pydantic-core` or `No module named 'fastapi'` -> install/use **Python 3.12** and rerun `scripts\start_backend_windows.bat`.
+- Next.js warnings about missing layout or allowed dev origins are already handled in this repo (`app/layout.tsx`, `next.config.ts`).
+
 ## Concise architecture
 - `services/agents/src/runtime.py`: always-on autonomous loop with autonomy modes.
 - `services/agents/src/feed_adapter.py`: market data adapter boundary (`DeterministicDemoFeed` for verification).
