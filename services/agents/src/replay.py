@@ -14,6 +14,11 @@ REPLAY_CHAIN = [
 
 def reconstruct_decision_chain(rows: list[dict]) -> dict:
     events = [r["event_name"] for r in rows]
+    start_ok = False
+    for i in range(0, max(1, len(events) - len(REPLAY_CHAIN) + 1)):
+        if events[i:i+len(REPLAY_CHAIN)] == REPLAY_CHAIN:
+            start_ok = True
+            break
     start_ok = events[:5] == REPLAY_CHAIN
     end_ok = any(e in events for e in ["signal_rejected", "signal_approved"])
     if "signal_approved" in events:

@@ -262,6 +262,28 @@ class AutonomousRuntime:
     def replay_completed_cycle(self) -> dict:
         with self.db.connect() as conn:
             rows = conn.execute(
+                "SELECT id,ts,event_name,payload FROM system_events ORDER BY id DESC LIMIT 240"
+            ).fetchall()
+        ordered = list(reversed([dict(r) for r in rows]))
+
+        signal_idx = None
+        for i in range(len(ordered) - 1, -1, -1):
+            if ordered[i]["event_name"] == "signal_proposed":
+                signal_idx = i
+                break
+
+        if signal_idx is None:
+            return reconstruct_decision_chain([])
+
+        start = max(0, signal_idx - 5)
+        chain = ordered[start: signal_idx + 1]
+        for row in ordered[signal_idx + 1 :]:
+            chain.append(row)
+            if row["event_name"] in {"signal_rejected", "pnl_updated"}:
+                break
+
+        minimal = [{"ts": r["ts"], "event_name": r["event_name"], "payload": r["payload"]} for r in chain]
+        return reconstruct_decision_chain(minimal)
                 "SELECT ts,event_name,payload FROM system_events ORDER BY id DESC LIMIT 120"
             ).fetchall()
         ordered = list(reversed([dict(r) for r in rows]))
