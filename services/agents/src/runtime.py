@@ -284,6 +284,22 @@ class AutonomousRuntime:
 
         minimal = [{"ts": r["ts"], "event_name": r["event_name"], "payload": r["payload"]} for r in chain]
         return reconstruct_decision_chain(minimal)
+                "SELECT ts,event_name,payload FROM system_events ORDER BY id DESC LIMIT 120"
+            ).fetchall()
+        ordered = list(reversed([dict(r) for r in rows]))
+        chain = []
+        in_chain = False
+        for row in ordered:
+            ev = row["event_name"]
+            if ev == "signal_proposed":
+                in_chain = True
+                chain = [row]
+                continue
+            if in_chain:
+                chain.append(row)
+                if ev in {"signal_rejected", "pnl_updated"}:
+                    break
+        return reconstruct_decision_chain(chain)
 
     def _log_stage(self, stage: str, payload: dict) -> None:
         logger.info(json.dumps({"stage": stage, "ts": datetime.now(UTC).isoformat(), **payload}))
