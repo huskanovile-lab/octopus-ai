@@ -10,6 +10,18 @@ Frontend (one command):
 bash scripts/start_frontend.sh
 ```
 
+
+## Windows (CMD/PowerShell) quick start
+Backend:
+```bat
+scripts\start_backend_windows.bat
+```
+Frontend (new terminal):
+```bat
+scripts\start_frontend_windows.bat
+```
+If you see `'bash' is not recognized`, use these `.bat` scripts instead of `.sh`.
+
 ## Concise architecture
 - `services/agents/src/runtime.py`: always-on autonomous loop with autonomy modes.
 - `services/agents/src/feed_adapter.py`: market data adapter boundary (`DeterministicDemoFeed` for verification).

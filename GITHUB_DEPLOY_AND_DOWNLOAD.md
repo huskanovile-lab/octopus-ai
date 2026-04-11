@@ -57,3 +57,11 @@ bash scripts/create_release_folder.sh
 Outputs:
 - `dist/release-package/`
 - `dist/release-package.zip`
+
+
+## Windows note (`bash` not recognized)
+If you are in Windows CMD/PowerShell and get:
+`'bash' is not recognized as an internal or external command`
+use:
+- `scripts\start_backend_windows.bat`
+- `scripts\start_frontend_windows.bat`
